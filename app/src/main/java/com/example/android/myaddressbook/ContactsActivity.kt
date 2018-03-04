@@ -42,6 +42,10 @@ import android.widget.TextView
 import android.widget.Toast
 
 import com.google.gson.Gson
+import kotlinx.android.synthetic.main.activity_contacts.*
+import kotlinx.android.synthetic.main.contact_list_item.*
+import kotlinx.android.synthetic.main.content_contacts.*
+import kotlinx.android.synthetic.main.input_contact_dialog.view.*
 
 import org.json.JSONArray
 import org.json.JSONException
@@ -68,6 +72,12 @@ import java.util.HashSet
  *                    init { .. nameLabel = itemView.findViewById(R.id.textview_name)
  *    despues:        var nameLabel: TextView = itemView.findViewById(R.id.textview_name)
  *
+ * 4. Eliminar los findViewById agregando el plugin -apply plugin: 'kotlin-android-extensions'- en el build.gradle
+ *    entonces se comentó el //val toolbar = findViewById<Toolbar>(R.id.toolbar) y se autocompleto el import
+ *
+ *  5. Reemplazar
+ *      mFirstNameEdit = dialogView.findViewById(R.id.edittext_firstname)
+ *      mFirstNameEdit = dialogView.edittext_firstname
  *
  *
  */
@@ -88,14 +98,14 @@ class ContactsActivity : AppCompatActivity(), TextWatcher {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_contacts)
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        val fab = findViewById<FloatingActionButton>(R.id.fab)
+        //val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        //val fab = findViewById<FloatingActionButton>(R.id.fab)
 
         mPrefs = getPreferences(Context.MODE_PRIVATE)
         mContacts = loadContacts()
         mAdapter = ContactsAdapter(mContacts)
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(toolbar) //no fue inicializada y funciona
         setupRecyclerView()
 
         fab.setOnClickListener { showAddContactDialog(-1) }
@@ -132,10 +142,11 @@ class ContactsActivity : AppCompatActivity(), TextWatcher {
      * Sets up the RecyclerView: empty data set, item dividers, swipe to delete.
      */
     private fun setupRecyclerView() {
-        val recyclerView = findViewById<RecyclerView>(R.id.contact_list)
+       // val recyclerView = findViewById<RecyclerView>(R.id.contact_list)//sin kotlin
+        //val recyclerView = contact_list //con Kotlin
 
-        recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-        recyclerView.adapter = mAdapter
+        contact_list.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        contact_list.adapter = mAdapter
 
         // Implements swipe to delete
         val helper = ItemTouchHelper(
@@ -156,7 +167,7 @@ class ContactsActivity : AppCompatActivity(), TextWatcher {
                     }
                 })
 
-        helper.attachToRecyclerView(recyclerView)
+        helper.attachToRecyclerView(contact_list)
     }
 
     /**
@@ -172,9 +183,12 @@ class ContactsActivity : AppCompatActivity(), TextWatcher {
         val dialogView = LayoutInflater.from(this)
                 .inflate(R.layout.input_contact_dialog, null)
 
-        mFirstNameEdit = dialogView.findViewById(R.id.edittext_firstname)
-        mLastNameEdit = dialogView.findViewById(R.id.edittext_lastname)
-        mEmailEdit = dialogView.findViewById(R.id.edittext_email)
+        //mFirstNameEdit = dialogView.findViewById(R.id.edittext_firstname)
+        mFirstNameEdit = dialogView.edittext_firstname
+        //mLastNameEdit = dialogView.findViewById(R.id.edittext_lastname)
+        mLastNameEdit = dialogView.edittext_lastname
+        //mEmailEdit = dialogView.findViewById(R.id.edittext_email)
+        mEmailEdit = dialogView.edittext_email
 
         // Listens to text changes to validate after each key press
         mFirstNameEdit!!.addTextChangedListener(this)
@@ -394,8 +408,9 @@ class ContactsActivity : AppCompatActivity(), TextWatcher {
         }
 
         internal inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            var nameLabel: TextView = itemView.findViewById(R.id.textview_name)
-            var emailLabel: TextView = itemView.findViewById(R.id.textview_email)
+            var nameLabel : TextView = textview_name
+            // var emailLabel: TextView = itemView.findViewById(R.id.textview_email) //Sin Kotlin Plugin Extension
+            var emailLabel: TextView = textview_email //Con Kotlin Plugin Extension
 
             init {
 
